@@ -2,6 +2,7 @@ package com.ems.employeemanagement.controller;
 
 import java.util.List;
 
+import com.ems.employeemanagement.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +42,7 @@ public class EmployeeController {
 		return ResponseEntity.ok(returnedEmployee);
 	}
 	
-	@GetMapping("/ap/employee")
+	@GetMapping("/api/employee")
 	public ResponseEntity<List<EmployeeDto>> getAllEmployee(){
 		List<EmployeeDto> allEmployee = employeeService.getAllEmployee();
 		return ResponseEntity.ok(allEmployee);
@@ -56,6 +57,17 @@ public class EmployeeController {
 	public ResponseEntity<String> deleteEmployee(@PathVariable("id") long employeeId ){
 		employeeService.deleteEmployee(employeeId);
 		return ResponseEntity.ok("success");
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<EmployeeDto> login(@RequestBody EmployeeDto e){
+		EmployeeDto dto = employeeService.login(e);
+		return ResponseEntity.ok(dto);
+	}
+	@PostMapping("/r")
+	public ResponseEntity<EmployeeDto> register(@RequestBody EmployeeDto e){
+		EmployeeDto dto =  employeeService.register(e);
+		return ResponseEntity.ok(dto);
 	}
 
 	

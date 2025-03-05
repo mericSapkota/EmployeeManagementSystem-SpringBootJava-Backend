@@ -15,20 +15,22 @@ public class EmployeeMapper {
 				e.getEmail(),
 				e.getUsername(),
 				e.getPassword(),
-				e.getAge()
+				e.getAge(),
+				e.getRole()
 				);
 	} 
 	
-	public static EmployeeDto mapToEmployeeDto(Employee e) {
-		return new EmployeeDto(
-				e.getId(),
-				e.getFirstName(),
-				e.getLastName(),
-				e.getEmail(),
-				e.getUsername(),
-				e.getPassword(),
-				e.getAge()
-				);
+	public static EmployeeDto mapToEmployeeDto(Employee emp) {
+		EmployeeDto e = new EmployeeDto();
+		e.setId(emp.getId());
+		e.setRole(emp.getRole());
+		e.setAge(emp.getAge());
+		e.setEmail(emp.getEmail());
+		e.setUsername(emp.getUsername());
+		e.setPassword(emp.getPassword());
+		e.setFirstName(emp.getFirstName());
+		e.setLastName(emp.getLastName());
+		return e;
 	}
 
 }

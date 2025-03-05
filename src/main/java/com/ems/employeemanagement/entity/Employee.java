@@ -1,11 +1,6 @@
 package com.ems.employeemanagement.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,9 +23,11 @@ public class Employee {
 	private String lastName;
 	@Column(name="email",nullable = false,unique = true)
 	private String email;
-	@Column(name="username")
+	@Column(name="username",nullable = false, unique = true)
 	private String username;
 	@Column(name="password")
 	private String password;
 	private int age;
+	@Enumerated(EnumType.STRING)
+	private Role role;
 }

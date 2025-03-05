@@ -1,5 +1,6 @@
 package com.ems.employeemanagement.dto;
 
+import com.ems.employeemanagement.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,6 @@ public class EmployeeDto {
 	private String username;
 	private String password;
 	private int age;
+	private Role role;
+	private String token;
 }
