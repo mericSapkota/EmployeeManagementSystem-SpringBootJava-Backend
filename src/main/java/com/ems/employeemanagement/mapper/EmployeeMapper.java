@@ -16,7 +16,8 @@ public class EmployeeMapper {
 				e.getUsername(),
 				e.getPassword(),
 				e.getAge(),
-				e.getRole()
+				e.getRole(),
+				e.getFilePath()
 				);
 	} 
 	
@@ -30,6 +31,7 @@ public class EmployeeMapper {
 		e.setPassword(emp.getPassword());
 		e.setFirstName(emp.getFirstName());
 		e.setLastName(emp.getLastName());
+		e.setFilePath(emp.getFilepath());
 		return e;
 	}
 

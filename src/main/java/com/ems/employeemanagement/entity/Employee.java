@@ -1,16 +1,14 @@
 package com.ems.employeemanagement.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 @Table(name="employees")
 public class Employee {
 	@Id
@@ -30,4 +28,5 @@ public class Employee {
 	private int age;
 	@Enumerated(EnumType.STRING)
 	private Role role;
+	private String filepath;
 }

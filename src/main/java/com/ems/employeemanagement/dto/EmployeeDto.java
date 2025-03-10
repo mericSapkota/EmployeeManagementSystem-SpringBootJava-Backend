@@ -1,15 +1,14 @@
 package com.ems.employeemanagement.dto;
 
 import com.ems.employeemanagement.entity.Role;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class EmployeeDto {
 
 	private long id;
@@ -21,4 +20,8 @@ public class EmployeeDto {
 	private int age;
 	private Role role;
 	private String token;
+    private MultipartFile file;
+	private String filePath;
+	private String image;
+
 }

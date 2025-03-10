@@ -1,22 +1,21 @@
 package com.ems.employeemanagement.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 
+import com.ems.employeemanagement.dto.AnnouncementDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ems.employeemanagement.entity.Announcements;
 import com.ems.employeemanagement.service.impl.AnnouncementServiceImpl;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin("*")
@@ -26,8 +25,25 @@ public class AnnouncementController {
 private AnnouncementServiceImpl aService;
 
 	@PostMapping("/api/announcements")
-	public ResponseEntity<Announcements> saveA(@RequestBody Announcements a ){
-		Announcements an=  aService.saveAnnouncement(a);
+	public ResponseEntity<Announcements> saveA(@ModelAttribute AnnouncementDto a ){
+		MultipartFile file = a.getFile();
+		String uploadDirectory = "/Users/mericsapkota/Documents/workspace-spring-tool-suite-4-4.24.0.RELEASE/employeemanagement/src/main/java/com/ems/employeemanagement/images/announcement/";
+		File directory = new File(uploadDirectory);
+		if(!directory.exists()){
+			directory.mkdirs();
+		}
+		String fileName = System.currentTimeMillis()+file.getOriginalFilename();
+		String filePath = uploadDirectory + fileName;
+        try {
+            file.transferTo(new File(filePath));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+		a.setTime(LocalTime.now());
+		a.setDate(LocalDate.now());
+		a.setFilePath(filePath);
+
+        Announcements an=  aService.saveAnnouncement(a);
 		return ResponseEntity.ok(an);
 	}
 	
@@ -48,8 +64,9 @@ private AnnouncementServiceImpl aService;
 	
 
 	@GetMapping("/api/announcements/all")
-	public ResponseEntity<List<Announcements>> getAllAnnouncements(){
-		List<Announcements> a = aService.getAll();
+	public ResponseEntity<List<AnnouncementDto>> getAllAnnouncements(){
+		List<AnnouncementDto> a = aService.getAll();
+		System.out.println(a);
 		return  ResponseEntity.ok(a);
 	}
 }

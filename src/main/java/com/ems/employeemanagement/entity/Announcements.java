@@ -28,6 +28,6 @@ public class Announcements {
 	private LocalTime time;
 	private String content;
 	private String image;
-	
+	private String username;
 	
 }

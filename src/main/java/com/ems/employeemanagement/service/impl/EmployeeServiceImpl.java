@@ -1,15 +1,19 @@
 package com.ems.employeemanagement.service.impl;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Base64;
 import java.util.List;
 
 import java.util.stream.Collectors;
 
-
-import com.ems.employeemanagement.entity.Role;
 import com.ems.employeemanagement.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,7 +26,7 @@ import com.ems.employeemanagement.exception.ResourceNotFoundException;
 import com.ems.employeemanagement.mapper.EmployeeMapper;
 import com.ems.employeemanagement.repository.EmployeeRepository;
 import com.ems.employeemanagement.service.EmployeeService;
-
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 
@@ -35,6 +39,8 @@ public class EmployeeServiceImpl implements EmployeeService{
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	@Autowired
 	private AuthenticationManager authenticationManager;
+	@Autowired
+	private JavaMailSender jms;
 
 	@Autowired
 	private JwtService jwtService;
@@ -89,17 +95,37 @@ public class EmployeeServiceImpl implements EmployeeService{
 			Employee employee = employeeRepo.findByUsername(e.getUsername());
 			EmployeeDto emp = EmployeeMapper.mapToEmployeeDto(employee);
 			emp.setToken(jwtService.generateToken(e));
-			System.out.println("printing"+jwtService.generateToken(e));
+			String filePath=employee.getFilepath();
 			return emp;
 		}
+
 		return null;
 	}
 
+	public String sendImageFromDownloads(String filePath){
+        try {
+            return Base64.getEncoder().encodeToString(Files.readAllBytes(new File(filePath).toPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 	@Override
 	public EmployeeDto register(EmployeeDto e) {
-		e.setRole(Role.EMPLOYEE);
-		e.setPassword(bCryptPasswordEncoder.encode(e.getPassword()));
+		String pass = e.getPassword();
+		e.setPassword(bCryptPasswordEncoder.encode(pass));
+		System.out.println(e.getEmail());
 		Employee emp = EmployeeMapper.mapToEmployee(e);
+		System.out.println(emp);
+
+		SimpleMailMessage mail = new SimpleMailMessage();
+		mail.setTo(e.getEmail());
+		mail.setSubject("Welcome to Meric's Chat App");
+		mail.setText("Welcome to my chat app. I hope You will have fun Best Regards. These are your " +
+				"email and passwords \n username: "+e.getEmail()+"\n passowrd: "+ pass+
+				" \n login from link below: \n"+" http://localhost:3000/login");
+		jms.send(mail);
+
 		return EmployeeMapper.mapToEmployeeDto(employeeRepo.save(emp));
 	}
 

@@ -1,5 +1,7 @@
 package com.ems.employeemanagement.controller;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import com.ems.employeemanagement.entity.Employee;
@@ -7,18 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.ems.employeemanagement.dto.EmployeeDto;
 
 import com.ems.employeemanagement.service.impl.EmployeeServiceImpl;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin("*")
@@ -62,15 +58,34 @@ public class EmployeeController {
 	@PostMapping("/login")
 	public ResponseEntity<EmployeeDto> login(@RequestBody EmployeeDto e){
 		EmployeeDto dto = employeeService.login(e);
-		return ResponseEntity.ok(dto);
-	}
-	@PostMapping("/r")
-	public ResponseEntity<EmployeeDto> register(@RequestBody EmployeeDto e){
-		EmployeeDto dto =  employeeService.register(e);
+		dto.setImage(employeeService.sendImageFromDownloads(dto.getFilePath()));
+
 		return ResponseEntity.ok(dto);
 	}
 
-	
+	@PostMapping("/r")
+	public ResponseEntity<?> register(@ModelAttribute EmployeeDto e) throws IOException {
+
+		MultipartFile file = e.getFile();
+		String uploadDirectory = "/Users/mericsapkota/Documents/workspace-spring-tool-suite-4-4.24.0.RELEASE/employeemanagement/src/main/java/com/ems/employeemanagement/images/";
+		File directory = new File(uploadDirectory);
+		if (!directory.exists()) {
+			directory.mkdirs();
+		}
+		String fileName = System.currentTimeMillis()+ file.getOriginalFilename();
+		String filePath =uploadDirectory+fileName;
+		file.transferTo(new File(filePath));
+
+		e.setFilePath(filePath);
+		EmployeeDto dto = employeeService.register(e);
+
+
+		return ResponseEntity.ok(dto);
+	}
+
+
+
+
 	@GetMapping("/")
 	public String hello() {
 		return "Hello";
