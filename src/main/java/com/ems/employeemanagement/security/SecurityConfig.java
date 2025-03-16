@@ -43,13 +43,11 @@ public class SecurityConfig{
 		http.cors(Customizer.withDefaults())
 				.csrf(csrf->csrf.disable())
 				.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/r", "/").permitAll()
-//				.requestMatchers("/user","/api/**").hasAuthority("admin")
-                        .anyRequest().authenticated()).
-				httpBasic(Customizer.withDefaults())
-
+                        .requestMatchers("/login", "/r", "/","/salary/add").permitAll()
+                        .anyRequest().authenticated())
+				.httpBasic(Customizer.withDefaults())
 		.sessionManagement((session)->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 	

@@ -14,4 +14,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     @Query("SELECT e.filepath FROM Employee e WHERE e.username = :username")
     String findFilepathByUsername(@Param("username") String username);
+
+    @Query("SELECT e.id from Employee e WHERE e.username = :username")
+    long findEmpIdByUsername(@Param(("username")) String username);
 }

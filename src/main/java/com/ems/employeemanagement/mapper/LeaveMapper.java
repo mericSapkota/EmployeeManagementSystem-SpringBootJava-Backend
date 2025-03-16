@@ -18,6 +18,7 @@ public class LeaveMapper {
 	}
 	
 	public static LeaveDto mapToDto(Leave l) {
+
 		return  new LeaveDto(
 				l.getId(),
 				l.getEmpId(),

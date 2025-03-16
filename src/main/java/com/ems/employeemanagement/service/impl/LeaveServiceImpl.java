@@ -3,6 +3,7 @@ package com.ems.employeemanagement.service.impl;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -30,21 +31,17 @@ public class LeaveServiceImpl implements LeaveService{
 
 	@Override
 	public LeaveDto updateLeaveApplication(LeaveDto updateDetails, long leaveId) {
-		Leave l = lr.findById(leaveId).orElseThrow(()->new ResourceNotFoundException("no id found "+leaveId));
-		if(!updateDetails.getLeaveReason().isBlank() && (updateDetails.getEndDate()!=null) && (updateDetails.getStartDate()!=null)) {
-		l.setLeaveReason(updateDetails.getLeaveReason());
-		l.setStartDate(updateDetails.getStartDate());
-		l.setEndDate(updateDetails.getEndDate());
+		Leave l = lr.findById(leaveId).orElseThrow(()->new RuntimeException("error in leave "));
 		l.setStatus(updateDetails.getStatus());
 		Leave updatedDetails =  lr.save(l);
 		return LeaveMapper.mapToDto(updatedDetails);
-		}
-		throw new ResourceNotFoundException("Not valid input");
+
+
 	}
 
 	@Override
 	public void deleteLeaveApplication(long leaveId) {
-		Leave l = lr.findById(leaveId).orElseThrow(()-> new ResourceNotFoundException("no id present "+leaveId));
+		Leave l = lr.findById(leaveId).orElseThrow(()->new RuntimeException(""));
 		lr.delete(l);
 	}
 
@@ -58,28 +55,16 @@ public class LeaveServiceImpl implements LeaveService{
 	@Override
 	public List<LeaveDto> getAllLeave(long empId){
 		List<Leave> listLeave = lr.findAllByEmpId(empId);
-		
-		List<LeaveDto> listOfLeaveDto = listLeave.stream().map((leave)->LeaveMapper.mapToDto(leave)).collect(Collectors.toList());
-		return listOfLeaveDto;
+		return  listLeave.stream().map((leave)->LeaveMapper.mapToDto(leave)).collect(Collectors.toList());
 	}
-	
-	public  boolean leaveCheck(LocalDate date, long empId) {
-		LocalDate prevLeaveDate = lr.findEndDateByEmpId(empId);
-		LocalDate appliedLeaveDate = date;
-		if(prevLeaveDate.isBefore(appliedLeaveDate)) {
-			return true;
-		}
-		return false;
+
+	@Override
+	public LeaveDto getLeaveById(long id) {
+		Leave l = lr.findLeaveById(id);
+		System.out.println(l);
+		return LeaveMapper.mapToDto(l);
 	}
-	public boolean leaveExists(long empId) {
-		Leave l = lr.findEmpIdByEmpId(empId);
-		
-		if(l!=null) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+
+
 
 }

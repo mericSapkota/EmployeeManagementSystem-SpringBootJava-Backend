@@ -24,11 +24,13 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private ApplicationContext context;
 
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String requestURI = request.getRequestURI();
 
-        if (requestURI.equals("/r") || requestURI.equals("/login") || requestURI.equals("/")) {
+        if (request.getServletPath().equals("/salary/add")) {
             filterChain.doFilter(request, response);
             return;
         }

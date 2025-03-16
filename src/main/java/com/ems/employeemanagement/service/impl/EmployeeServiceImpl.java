@@ -70,14 +70,23 @@ public class EmployeeServiceImpl implements EmployeeService{
 	@Override
 	public EmployeeDto updateEmployee(long employeeId, EmployeeDto updatedDetails) {
 		Employee employee =  employeeRepo.findById(employeeId).orElseThrow(()->new ResourceNotFoundException("no id found :"+employeeId));
+		if(employee.getFilepath()!=null){
+			String filePath = employee.getFilepath();
+			File file = new File(filePath);
+			if(file.exists()){
+				file.delete();
+			}
+		}
+
 		employee.setFirstName(updatedDetails.getFirstName());
 		employee.setLastName(updatedDetails.getLastName());
 		employee.setEmail(updatedDetails.getEmail());
 		employee.setAge(updatedDetails.getAge());
 		employee.setUsername(updatedDetails.getUsername());
 		employee.setPassword(bCryptPasswordEncoder.encode(updatedDetails.getPassword()));
-		
+		employee.setFilepath(updatedDetails.getFilePath());
 		Employee savedEmployee = employeeRepo.save(employee);
+
 		return EmployeeMapper.mapToEmployeeDto(savedEmployee);
 	}
 
@@ -96,6 +105,7 @@ public class EmployeeServiceImpl implements EmployeeService{
 			EmployeeDto emp = EmployeeMapper.mapToEmployeeDto(employee);
 			emp.setToken(jwtService.generateToken(e));
 			String filePath=employee.getFilepath();
+			emp.setId(employee.getId());
 			return emp;
 		}
 
@@ -103,6 +113,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 	}
 
 	public String sendImageFromDownloads(String filePath){
+		if(filePath==null){
+			return null;
+		}
         try {
             return Base64.getEncoder().encodeToString(Files.readAllBytes(new File(filePath).toPath()));
         } catch (IOException e) {
@@ -120,13 +133,16 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 		SimpleMailMessage mail = new SimpleMailMessage();
 		mail.setTo(e.getEmail());
-		mail.setSubject("Welcome to Meric's Chat App");
-		mail.setText("Welcome to my chat app. I hope You will have fun Best Regards. These are your " +
-				"email and passwords \n username: "+e.getEmail()+"\n passowrd: "+ pass+
+		mail.setSubject("Welcome to Employee Management System");
+		mail.setText("Welcome to Employee Management System. I hope You will have fun Best Regards. These are your " +
+				"email and passwords \n username: "+e.getUsername()+"\n passowrd: "+ pass+
 				" \n login from link below: \n"+" http://localhost:3000/login");
 		jms.send(mail);
 
 		return EmployeeMapper.mapToEmployeeDto(employeeRepo.save(emp));
 	}
 
+	public Long getEmpIdByUsername(String username) {
+		return employeeRepo.findEmpIdByUsername(username);
+	}
 }

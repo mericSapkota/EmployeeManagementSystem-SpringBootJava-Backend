@@ -28,19 +28,27 @@ public class AnnouncementServiceImpl implements AnnouncementService {
 
 	@Override
 	public List<AnnouncementDto> getAll() {
-		List<Announcements> allAnnouncements = aRepo.findAll();
-		return allAnnouncements.stream()
+		List<Announcements> allAnnouncements = aRepo.findAllByOrderByTimeDesc();
+		return allAnnouncements.stream().
+				sorted((a,b)->b.getDate().compareTo(a.getDate()))
 				.map((a)->{
 					AnnouncementDto d = AnnouncementMapper.mapToAnnouncementDto(a);
-					d.setPostedImage(sendImageFromDownloads(d.getFilePath()));
+					if(d.getFilePath()!=null) {
+						d.setPostedImage(sendImageFromDownloads(d.getFilePath()));
+					}
+					if(eRepo.findFilepathByUsername(d.getUsername())!=null){
 					String posterPath =  eRepo.findFilepathByUsername(d.getUsername());
 					d.setPosterImage(sendImageFromDownloads(posterPath));
+					}
 					return d;
 				})
 				.collect(Collectors.toList());
 
 	}
 	public String sendImageFromDownloads(String filePath){
+		if(filePath==null){
+			return null;
+		}
 		try {
 			return Base64.getEncoder().encodeToString(Files.readAllBytes(new File(filePath).toPath()));
 		} catch (IOException e) {

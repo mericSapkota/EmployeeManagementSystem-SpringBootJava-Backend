@@ -10,4 +10,6 @@ public interface LeaveService {
  public void deleteLeaveApplication(long leaveId);
  public List<LeaveDto> getAllLeave();
  public List<LeaveDto> getAllLeave(long empId);
+
+   public LeaveDto getLeaveById(long id);
 }

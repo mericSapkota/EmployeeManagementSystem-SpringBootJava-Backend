@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.ems.employeemanagement.entity.Employee;
+import com.ems.employeemanagement.service.impl.AnnouncementServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,8 @@ public class EmployeeController {
 	
 	@Autowired
 	private EmployeeServiceImpl employeeService;
+	@Autowired
+	private AnnouncementServiceImpl as;
 	
 	@PostMapping("/api/employee")
 	public ResponseEntity<EmployeeDto> saveEmploye(@RequestBody EmployeeDto emp){
@@ -35,6 +38,7 @@ public class EmployeeController {
 	@GetMapping("/api/employee/{id}")
 	public ResponseEntity<EmployeeDto> getEmployeeById(@PathVariable("id") long employeeId){
 		EmployeeDto returnedEmployee = employeeService.getEmployeeById(employeeId);
+		returnedEmployee.setImage(as.sendImageFromDownloads(returnedEmployee.getFilePath()));
 		return ResponseEntity.ok(returnedEmployee);
 	}
 	
@@ -45,8 +49,24 @@ public class EmployeeController {
 	}
 	
 	@PutMapping("/api/employee/{id}")
-	public ResponseEntity<EmployeeDto> updateEmployeeDetails(@PathVariable("id") long employeeId, @RequestBody EmployeeDto updatedDetails){
+	public ResponseEntity<EmployeeDto> updateEmployeeDetails(@PathVariable("id") long employeeId, @ModelAttribute EmployeeDto updatedDetails) throws IOException {
+		if(updatedDetails.getFile()!=null) {
+			MultipartFile file = updatedDetails.getFile();
+			String uploadDirectory = "/Users/mericsapkota/Documents/workspace-spring-tool-suite-4-4.24.0.RELEASE/employeemanagement/src/main/java/com/ems/employeemanagement/images/";
+			File directory = new File(uploadDirectory);
+			if (!directory.exists()) {
+				directory.mkdirs();
+			}
+			String fileName = System.currentTimeMillis() + file.getOriginalFilename();
+			String filePath = uploadDirectory + fileName;
+
+			file.transferTo(new File(filePath));
+
+			updatedDetails.setFilePath(filePath);
+		}
+
 		EmployeeDto updatedEmployee = employeeService.updateEmployee(employeeId, updatedDetails);
+		updatedEmployee.setImage(as.sendImageFromDownloads(updatedEmployee.getFilePath()));
 		return ResponseEntity.ok(updatedEmployee);
 	}
 	@DeleteMapping("/api/employee/{id}")
@@ -65,18 +85,19 @@ public class EmployeeController {
 
 	@PostMapping("/r")
 	public ResponseEntity<?> register(@ModelAttribute EmployeeDto e) throws IOException {
+		if(e.getFile()!=null) {
+			MultipartFile file = e.getFile();
+			String uploadDirectory = "/Users/mericsapkota/Documents/workspace-spring-tool-suite-4-4.24.0.RELEASE/employeemanagement/src/main/java/com/ems/employeemanagement/images/";
+			File directory = new File(uploadDirectory);
+			if (!directory.exists()) {
+				directory.mkdirs();
+			}
+			String fileName = System.currentTimeMillis() + file.getOriginalFilename();
+			String filePath = uploadDirectory + fileName;
+			file.transferTo(new File(filePath));
 
-		MultipartFile file = e.getFile();
-		String uploadDirectory = "/Users/mericsapkota/Documents/workspace-spring-tool-suite-4-4.24.0.RELEASE/employeemanagement/src/main/java/com/ems/employeemanagement/images/";
-		File directory = new File(uploadDirectory);
-		if (!directory.exists()) {
-			directory.mkdirs();
+			e.setFilePath(filePath);
 		}
-		String fileName = System.currentTimeMillis()+ file.getOriginalFilename();
-		String filePath =uploadDirectory+fileName;
-		file.transferTo(new File(filePath));
-
-		e.setFilePath(filePath);
 		EmployeeDto dto = employeeService.register(e);
 
 

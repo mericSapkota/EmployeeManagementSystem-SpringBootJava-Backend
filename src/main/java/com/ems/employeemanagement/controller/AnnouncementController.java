@@ -26,6 +26,7 @@ private AnnouncementServiceImpl aService;
 
 	@PostMapping("/api/announcements")
 	public ResponseEntity<Announcements> saveA(@ModelAttribute AnnouncementDto a ){
+		if(a.getFile()!=null){
 		MultipartFile file = a.getFile();
 		String uploadDirectory = "/Users/mericsapkota/Documents/workspace-spring-tool-suite-4-4.24.0.RELEASE/employeemanagement/src/main/java/com/ems/employeemanagement/images/announcement/";
 		File directory = new File(uploadDirectory);
@@ -39,9 +40,12 @@ private AnnouncementServiceImpl aService;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+			a.setFilePath(filePath);
+		}
+
 		a.setTime(LocalTime.now());
 		a.setDate(LocalDate.now());
-		a.setFilePath(filePath);
+
 
         Announcements an=  aService.saveAnnouncement(a);
 		return ResponseEntity.ok(an);
@@ -66,7 +70,7 @@ private AnnouncementServiceImpl aService;
 	@GetMapping("/api/announcements/all")
 	public ResponseEntity<List<AnnouncementDto>> getAllAnnouncements(){
 		List<AnnouncementDto> a = aService.getAll();
-		System.out.println(a);
+
 		return  ResponseEntity.ok(a);
 	}
 }
