@@ -17,4 +17,6 @@ public interface EmployeeService {
     EmployeeDto login(EmployeeDto e);
 
 	EmployeeDto register(EmployeeDto e);
+
+    List<String> getAllUsername();
 }

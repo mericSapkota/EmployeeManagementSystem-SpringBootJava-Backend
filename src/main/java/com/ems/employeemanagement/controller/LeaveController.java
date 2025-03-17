@@ -34,7 +34,7 @@ public class LeaveController {
 	
 	@PutMapping("/api/leave/{id}")
 	public ResponseEntity<LeaveDto> updateLeaveApplication(@PathVariable("id")long id, @RequestBody LeaveDto leave){
-		System.out.println("i am at ocntroller " +leave.getStatus());
+
 		LeaveDto updatedDetails =  l.updateLeaveApplication(leave, id);
 		return ResponseEntity.ok(updatedDetails);
 	}

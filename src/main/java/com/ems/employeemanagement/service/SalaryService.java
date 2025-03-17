@@ -2,6 +2,7 @@ package com.ems.employeemanagement.service;
 
 import com.ems.employeemanagement.dto.SalaryDto;
 import com.ems.employeemanagement.entity.Salary;
+import com.ems.employeemanagement.exception.ResourceNotFoundException;
 import com.ems.employeemanagement.mapper.SalaryMapper;
 import com.ems.employeemanagement.repository.SalaryRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,10 @@ public class SalaryService {
         Salary salary =SalaryMapper.mapToSalary(dto);
         Salary s =  sr.save(salary);
         return SalaryMapper.mapToDto(s);
+    }
+
+    public void deleteSalary(SalaryDto dto) {
+        sr.findById(dto.getId()).orElseThrow(()->new ResourceNotFoundException("no salary record found"));
+        sr.deleteById(dto.getId());
     }
 }

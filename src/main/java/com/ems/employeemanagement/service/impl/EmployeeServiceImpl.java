@@ -142,6 +142,12 @@ public class EmployeeServiceImpl implements EmployeeService{
 		return EmployeeMapper.mapToEmployeeDto(employeeRepo.save(emp));
 	}
 
+	@Override
+	public List<String> getAllUsername() {
+
+		return employeeRepo.findAllUsername();
+	}
+
 	public Long getEmpIdByUsername(String username) {
 		return employeeRepo.findEmpIdByUsername(username);
 	}
